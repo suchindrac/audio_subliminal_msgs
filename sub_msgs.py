@@ -4,14 +4,12 @@ from PyQt5 import QtGui, QtCore, QtTest
 from scipy.io import wavfile as wav
 import numpy as np
 import time
+import argparse
 
 #
 # Making it easier
 #
 decoded_freqs = []
-tbox = None
-obox = None
-msg = None
 
 def read_wav(filename):
     rate, data = wav.read(filename)
@@ -57,18 +55,31 @@ class Window(QWidget):
         self.setGeometry(0, 0, 800, 600)
         self.show()
 
+        self.tbox = QLineEdit(self)
+        self.tbox.move(0, 0)
+        self.tbox.resize(800, 40)
+        self.tbox.setCursorPosition(0)
+        self.tbox.show()
+
+        self.obox = QTextEdit(self)
+        self.obox.move(0, 100)
+        self.obox.resize(800, 400)
+        self.obox.show()
+
     def keyPressEvent(self, event):
-        global msg
-        msg = tbox.text()
+        msg = self.tbox.text()
+
         if event.key() == QtCore.Qt.Key_Enter-1:
-            do_the_dance()
+            self.tbox.hide()
+            self.obox.resize(800, 600)
+            self.obox.move(0, 0)
+            do_the_dance(self.obox, msg)
         event.accept()
 
-def do_the_dance():
-    tbox.hide()
+def do_the_dance(obox, msg):
     obox.setProperty("urgent", True)
-    obox.style().unpolish(tbox)
-    obox.style().polish(tbox)
+    obox.style().unpolish(obox)
+    obox.style().polish(obox)
 
     msg_put = ""
     enum = 0
@@ -82,10 +93,10 @@ def do_the_dance():
     
     for freq in decoded_freqs:
         set_freq = int(freq / 20)
-        if set_freq == 0:
-            set_freq = 5
-        if set_freq >= 100:
-            set_freq = 70
+        if set_freq < 10:
+            set_freq = 15
+        if set_freq >= 50:
+            set_freq = 50
             
         set_freq = "{}%".format(set_freq)
         obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_freq))
@@ -93,25 +104,23 @@ def do_the_dance():
         QtTest.QTest.qWait(100)
         
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--message", required=True, type=str, help="The subliminal message")
+    parser.add_argument("-a", "--audio_file", required=True, type=str, help="The audio file path")
+    args = parser.parse_args()
+
+    message = args.message
+    audio_file = args.audio_file
+    msg = message    
     app = QApplication(sys.argv)
     w = Window()
     w.resize(800, 600)
     w.setWindowTitle("Subliminal Messages")
 
-    chunk, offset, data, rate, bits = read_wav("output.wav")
-
-    decoded_freqs = [get_freq(chunk, bit, offset, data, rate) for bit in range(bits)]
+    w.tbox.setText(message)
+    chunk, offset, data, rate, bits = read_wav(audio_file)
     
-    tbox = QLineEdit(w)
-    tbox.move(0, 0)
-    tbox.resize(800, 40)
-    tbox.setCursorPosition(0)
-    tbox.show()
-
-    obox = QTextEdit(w)
-    obox.move(0, 100)
-    obox.resize(800, 400)
-    obox.show()
+    decoded_freqs = [get_freq(chunk, bit, offset, data, rate) for bit in range(bits)]
     
     w.show()
     sys.exit(app.exec_())
