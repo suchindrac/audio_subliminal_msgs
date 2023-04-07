@@ -73,35 +73,36 @@ class Window(QWidget):
             self.tbox.hide()
             self.obox.resize(800, 600)
             self.obox.move(0, 0)
-            do_the_dance(self.obox, msg)
+            self.do_the_dance()
         event.accept()
 
-def do_the_dance(obox, msg):
-    obox.setProperty("urgent", True)
-    obox.style().unpolish(obox)
-    obox.style().polish(obox)
+    def do_the_dance(self):
+        self.obox.setProperty("urgent", True)
+        self.obox.style().unpolish(self.obox)
+        self.obox.style().polish(self.obox)
 
-    msg_put = ""
-    enum = 0
-    for i in range(100):
-        msg_put = msg_put + "{}\t".format(msg)
-        if enum % 5 == 0:
-            msg_put += "\n"
-        enum += 1
-        
-    obox.setText(msg_put)
-    
-    for freq in decoded_freqs:
-        set_freq = int(freq / 20)
-        if set_freq < 10:
-            set_freq = 15
-        if set_freq >= 50:
-            set_freq = 50
+        msg = self.tbox.text()
+        msg_put = ""
+        enum = 0
+        for i in range(100):
+            msg_put = msg_put + "{}\t".format(msg)
+            if enum % 5 == 0:
+                msg_put += "\n"
+            enum += 1
             
-        set_freq = "{}%".format(set_freq)
-        obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_freq))
-        obox.update()
-        QtTest.QTest.qWait(100)
+        self.obox.setText(msg_put)
+        
+        for freq in decoded_freqs:
+            set_freq = int(freq / 20)
+            if set_freq < 10:
+                set_freq = 15
+            if set_freq >= 50:
+                set_freq = 50
+                
+            set_freq = "{}%".format(set_freq)
+            self.obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_freq))
+            self.obox.update()
+            QtTest.QTest.qWait(100)
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
