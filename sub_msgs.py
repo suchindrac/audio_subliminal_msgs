@@ -6,11 +6,6 @@ import numpy as np
 import time
 import argparse
 
-#
-# Making it easier
-#
-decoded_freqs = []
-
 def read_wav(filename):
     rate, data = wav.read(filename)
     
@@ -92,7 +87,7 @@ class Window(QWidget):
             
         self.obox.setText(msg_put)
         
-        for freq in decoded_freqs:
+        for freq in self.decoded_freqs:
             set_freq = int(freq / 20)
             if set_freq < 10:
                 set_freq = 15
@@ -122,6 +117,7 @@ if __name__ == "__main__":
     chunk, offset, data, rate, bits = read_wav(audio_file)
     
     decoded_freqs = [get_freq(chunk, bit, offset, data, rate) for bit in range(bits)]
-    
+    w.decoded_freqs = decoded_freqs
+
     w.show()
     sys.exit(app.exec_())
