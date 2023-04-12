@@ -81,9 +81,11 @@ class Window(QWidget):
                 max_amp = max(numpydata)
                 set_val = int(max_amp / 20)
             
-            if set_val > 50:
+            if set_val > 25:
                 set_val = 10
+
             set_val = "{}%".format(set_val)
+            print(set_val)
             self.obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_val))
             self.obox.update()
             QtTest.QTest.qWait(100)
@@ -100,9 +102,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--message", required=True, type=str, help="The subliminal message")
     parser.add_argument("-f", "--frequency", required=False, action="store_false", help="Frequency based?")
+    parser.add_argument("-l", "--file", required=False, type=str, help="File to read")
     args = parser.parse_args()
 
     message = args.message
+    if getattr(args, 'file'):
+        with open(args.file, 'r') as fd:
+            message = fd.read()
 
     app = QApplication(sys.argv)
     w = Window(amplitude=not args.frequency)
