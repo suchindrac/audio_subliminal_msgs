@@ -71,7 +71,7 @@ class Window(QWidget):
             data = stream.read(chunk, exception_on_overflow=False)
             numpydata = np.frombuffer(data, dtype=np.int16)
 
-            if self.amplitude:
+            if not self.amplitude:
                 content = np.fft.fft(numpydata)
                 freqs = np.fft.fftfreq(len(content))
                 max_idx = np.argmax(np.abs(content))
@@ -85,7 +85,7 @@ class Window(QWidget):
                 set_val = 10
 
             set_val = "{}%".format(set_val)
-            print(set_val)
+            
             self.obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_val))
             self.obox.update()
             QtTest.QTest.qWait(100)
@@ -101,17 +101,18 @@ class Window(QWidget):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--message", required=True, type=str, help="The subliminal message")
-    parser.add_argument("-f", "--frequency", required=False, action="store_false", help="Frequency based?")
+    parser.add_argument("-f", "--frequency", required=False, action="store_true", help="Frequency based?")
     parser.add_argument("-l", "--file", required=False, type=str, help="File to read")
     args = parser.parse_args()
 
     message = args.message
+    amp = not args.frequency
     if getattr(args, 'file'):
         with open(args.file, 'r') as fd:
             message = fd.read()
 
     app = QApplication(sys.argv)
-    w = Window(amplitude=not args.frequency)
+    w = Window(amplitude=amp)
     w.resize(800, 600)
     w.setWindowTitle("Subliminal Messages")
 
