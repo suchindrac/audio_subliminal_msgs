@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QTextEdit, QMainWindow
 from PyQt5 import QtGui, QtCore, QtTest
 from scipy.io import wavfile as wav
 import numpy as np
@@ -9,13 +9,14 @@ import pyaudio
 import wave
 import struct
 
-class Window(QWidget):
+class Window(QMainWindow):
     def __init__(self, amplitude=True):
         super(Window, self).__init__()
         self.setGeometry(0, 0, 800, 600)
         self.show()
         self.amplitude = amplitude
-
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True) 
         self.tbox = QLineEdit(self)
         self.tbox.move(0, 0)
         self.tbox.resize(800, 40)
