@@ -17,6 +17,7 @@ class Window(QMainWindow):
         self.amplitude = amplitude
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True) 
+        self.setAttribute(QtCore.Qt.WA_NoSystemBackground, True) 
         self.tbox = QLineEdit(self)
         self.tbox.move(0, 0)
         self.tbox.resize(800, 40)
