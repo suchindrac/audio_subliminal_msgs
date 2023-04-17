@@ -90,7 +90,7 @@ class Window(QMainWindow):
     
                 set_val = "{}%".format(set_val)
                 
-                # self.obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_val))
+                self.obox.setStyleSheet("color: rgba(0, 0, 255, {})".format(set_val))
               
                 self.obox.setText(char)
                 self.obox.update()
