@@ -82,10 +82,6 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", type=str, required=False, help="File name to read messages from")
     
     args = parser.parse_args()
-    if getattr(args, "separator"):
-        sep = args.separator
-    if getattr(args, "change_type"):
-        change_type = args.change_type
     if getattr(args, "file"):
         file_path = args.file
         
