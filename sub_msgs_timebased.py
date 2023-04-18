@@ -79,9 +79,7 @@ class Window(QMainWindow):
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--separator", type=str, required=False, help="Separator to use for text")
-    parser.add_argument("-c", "--change_type", type=str, required=False, help="Change type wanted [letter/spaces]")
-    parser.add_argument("-f", "--file", type=str, required=False, help="File name")
+    parser.add_argument("-f", "--file", type=str, required=False, help="File name to read messages from")
     
     args = parser.parse_args()
     if getattr(args, "separator"):
