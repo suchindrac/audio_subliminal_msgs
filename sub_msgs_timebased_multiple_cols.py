@@ -92,14 +92,16 @@ class Window(QMainWindow):
              while True:
                  if index >= len(self.orig_msg)-1:
                      index = 0
+                
                  self.get_time_gap(index)
-                 index += 1
+                 print(self.gap)
                  self.set_boxes_chars()
                  if self.gap == 0:
-                     QtTest.QTest.qWait(50)
+                     QtTest.QTest.qWait(500)
                  else:
-                     QtTest.QTest.qWait(self.gap * 100)
-                     
+                     QtTest.QTest.qWait(self.gap * 1000)
+                 index += 1
+                 
          event.accept()
         
 if __name__ == "__main__":
