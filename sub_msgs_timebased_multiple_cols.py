@@ -87,11 +87,13 @@ class Window(QMainWindow):
                  rand_num = random.randint(0, len(self.orig_msg)-1)
                  self.boxes[i].cur_idx = rand_num
                  self.set_box_char(self.boxes[i].obj, self.orig_msg[self.boxes[i].cur_idx])
-                 
+             
+             index = 0
              while True:
-                 rand_num = random.randint(0, len(self.boxes)-1)
-
-                 self.get_time_gap(self.boxes[rand_num].cur_idx)
+                 if index >= len(self.orig_msg)-1:
+                     index = 0
+                 self.get_time_gap(index)
+                 index += 1
                  self.set_boxes_chars()
                  if self.gap == 0:
                      QtTest.QTest.qWait(50)
