@@ -19,9 +19,15 @@ def cycle():
 
 gen = cycle()
 
+class Box:
+    def __init__(self, obj):
+        self.cur_idx = 0
+        self.obj = obj
+        
 class Window(QMainWindow):
-    def __init__(self):
+    def __init__(self, fpath):
         super(Window, self).__init__()
+        self.fpath = fpath
         self.setGeometry(0, 0, 800, 600)
         self.show()
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
@@ -29,10 +35,19 @@ class Window(QMainWindow):
         self.setAttribute(QtCore.Qt.WA_NoSystemBackground, True) 
         self.gap = 0
 
-        self.obox = QTextEdit(self)
-        self.obox.move(0, 100)
-        self.obox.resize(800, 400)
-        self.obox.show()
+        with open(self.fpath, "r") as fd:
+            self.msg = fd.read()
+            self.orig_msg = self.msg.strip()
+            
+        self.boxes = []
+        for row in range(10, 1000, 20):
+            for col in range(10, 1000, 20):
+                box = QLineEdit(self)
+                box.move(row, col)
+                box.resize(20, 20)
+                box.show()
+                a_box = Box(box)
+                self.boxes.append(a_box)
 
     def mod(self, num):
         res = list(map(lambda x, y: x % y, (num, num, num), (3, 6, 9)))
@@ -51,46 +66,33 @@ class Window(QMainWindow):
          else:
              self.gap = 0
 
-    def get_msg(self):
-        init_str_lst = list(self.init_str)
-        for i in range(len(self.indices)):
-             cur_str_idx = self.indices[i]
+    def set_box_char(self, box, char):
+        box.setText(char)
+        box.update()
 
+    def set_boxes_chars(self):
+        for box in self.boxes:
+            cur_idx = box.cur_idx
+            new_idx = cur_idx + 1
+            if new_idx >= len(self.orig_msg):
+                new_idx = 0
+            new_char = self.orig_msg[new_idx]
 
-             if cur_str_idx >= len(self.orig_msg) - 1:
-                 cur_str_idx = 0
-             else:
-                 cur_str_idx += 1
-
-             init_str_lst[i] = self.orig_msg[cur_str_idx]
-             if self.indices[i] >= len(self.orig_msg)-1:
-                 self.indices[i] = 0
-             else:
-                 self.indices[i] += 1
-        self.init_str = "".join(init_str_lst)
-
+            self.set_box_char(box.obj, new_char)
+            box.cur_idx = new_idx
+            
     def keyReleaseEvent(self, event):
          if event.key() == QtCore.Qt.Key_Enter-1:
-             if not file_path:
-                 self.msg = self.obox.toPlainText()
-             else:
-                 with open(file_path, "r") as fd:
-                     self.msg = fd.read()
-
-             self.orig_msg = self.msg.strip()
-
-             self.indices = []
-             self.init_str = ""
-             for i in range(1000):
+             for i in range(len(self.boxes)):
                  rand_num = random.randint(0, len(self.orig_msg)-1)
-                 self.init_str += self.orig_msg[rand_num]
-                 self.indices.append(rand_num)
-
+                 self.boxes[i].cur_idx = rand_num
+                 self.set_box_char(self.boxes[i].obj, self.orig_msg[self.boxes[i].cur_idx])
+                 
              while True:
-                 rand_num = random.randint(0, len(self.indices)-1)
-                 self.get_msg()
-                 self.get_num_spaces(self.indices[rand_num])
-                 self.obox.setText(self.init_str)
+                 rand_num = random.randint(0, len(self.boxes)-1)
+
+                 self.get_num_spaces(self.boxes[rand_num].cur_idx)
+                 self.set_boxes_chars()
                  if self.gap == 0:
                      QtTest.QTest.qWait(50)
                  else:
@@ -100,14 +102,14 @@ class Window(QMainWindow):
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", type=str, required=False, help="File name to read messages from")
+    parser.add_argument("-f", "--file", type=str, required=True, help="File name to read messages from")
     
     args = parser.parse_args()
     if getattr(args, "file"):
         file_path = args.file
         
     app = QApplication(sys.argv)
-    w = Window()
+    w = Window(fpath=file_path)
     w.resize(800, 600)
     w.setWindowTitle("Subliminal Messages Editor")
 
