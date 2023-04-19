@@ -89,17 +89,17 @@ class Window(QMainWindow):
                  self.set_box_char(self.boxes[i].obj, self.orig_msg[self.boxes[i].cur_idx])
              
              index = 0
+             seq = 1
              while True:
+                 print(index, seq)
                  if index >= len(self.orig_msg)-1:
                      index = 0
-                
-                 self.get_time_gap(index)
-                 print(self.gap)
+                     seq += 1
+                 if seq == 4:
+                     seq = 1
+                     index = 0
                  self.set_boxes_chars()
-                 if self.gap == 0:
-                     QtTest.QTest.qWait(500)
-                 else:
-                     QtTest.QTest.qWait(self.gap * 1000)
+                 QtTest.QTest.qWait(seq * 100)
                  index += 1
                  
          event.accept()
