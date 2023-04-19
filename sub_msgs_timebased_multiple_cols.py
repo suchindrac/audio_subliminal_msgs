@@ -58,7 +58,7 @@ class Window(QMainWindow):
         else:
             return False
 
-    def get_num_spaces(self, num_chars):
+    def get_time_gap(self, num_chars):
          mod = self.mod(num_chars)
 
          if mod:
@@ -91,7 +91,7 @@ class Window(QMainWindow):
              while True:
                  rand_num = random.randint(0, len(self.boxes)-1)
 
-                 self.get_num_spaces(self.boxes[rand_num].cur_idx)
+                 self.get_time_gap(self.boxes[rand_num].cur_idx)
                  self.set_boxes_chars()
                  if self.gap == 0:
                      QtTest.QTest.qWait(50)
