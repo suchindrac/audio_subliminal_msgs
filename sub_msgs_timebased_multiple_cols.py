@@ -1,11 +1,11 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QTextEdit, QMainWindow
 from PyQt5 import QtGui, QtCore, QtTest
-from scipy.io import wavfile as wav
-import numpy as np
+
+
 import time
 import argparse
-import pyaudio
+
 import wave
 import struct
 import itertools
@@ -82,6 +82,8 @@ class Window(QMainWindow):
             box.cur_idx = new_idx
             
     def keyReleaseEvent(self, event):
+         if event.text() == 'q':
+             sys.exit(0)
          if event.key() == QtCore.Qt.Key_Enter-1:
              for i in range(len(self.boxes)):
                  rand_num = random.randint(0, len(self.orig_msg)-1)
@@ -91,7 +93,7 @@ class Window(QMainWindow):
              index = 0
              seq = 1
              while True:
-                 print(index, seq)
+
                  if index >= len(self.orig_msg)-1:
                      index = 0
                      seq += 1
