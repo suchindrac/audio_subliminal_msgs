@@ -1,11 +1,11 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QTextEdit, QMainWindow
 from PyQt5 import QtGui, QtCore, QtTest
-
-
+from scipy.io import wavfile as wav
+import numpy as np
 import time
 import argparse
-
+import pyaudio
 import wave
 import struct
 import itertools
@@ -38,7 +38,18 @@ class Window(QMainWindow):
         with open(self.fpath, "r") as fd:
             self.msg = fd.read()
             self.orig_msg = self.msg.strip()
-            
+        self.orig_msg_lst = []
+
+        ext_chars = [2306, 2375, 2381, 2366, 2367]
+        i = 0
+        while i < len(self.orig_msg):
+            if (i <= len(self.orig_msg)-2) and (ord(self.orig_msg[i+1]) in ext_chars):
+                self.orig_msg_lst.append("".join((self.orig_msg[i], self.orig_msg[i+1])))
+                i += 2
+            else:
+                self.orig_msg_lst.append(self.orig_msg[i])
+                i += 1
+                
         self.boxes = []
         for row in range(10, 1000, 20):
             for col in range(10, 1000, 20):
@@ -74,16 +85,16 @@ class Window(QMainWindow):
         for box in self.boxes:
             cur_idx = box.cur_idx
             new_idx = cur_idx + 1
-            if new_idx >= len(self.orig_msg):
+            if new_idx >= len(self.orig_msg_lst):
                 new_idx = 0
-            new_char = self.orig_msg[new_idx]
+           
+            new_char = self.orig_msg_lst[new_idx]
 
+            
             self.set_box_char(box.obj, new_char)
             box.cur_idx = new_idx
             
     def keyReleaseEvent(self, event):
-         if event.text() == 'q':
-             sys.exit(0)
          if event.key() == QtCore.Qt.Key_Enter-1:
              for i in range(len(self.boxes)):
                  rand_num = random.randint(0, len(self.orig_msg)-1)
@@ -93,7 +104,7 @@ class Window(QMainWindow):
              index = 0
              seq = 1
              while True:
-
+                 
                  if index >= len(self.orig_msg)-1:
                      index = 0
                      seq += 1
