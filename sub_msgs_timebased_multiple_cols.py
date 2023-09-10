@@ -25,10 +25,10 @@ class Box:
         self.obj = obj
         
 class Window(QMainWindow):
-    def __init__(self, fpath):
+    def __init__(self, width, height, fpath):
         super(Window, self).__init__()
         self.fpath = fpath
-        self.setGeometry(0, 0, 800, 600)
+        self.setGeometry(0, 0, width, height)
         self.show()
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True) 
@@ -40,16 +40,22 @@ class Window(QMainWindow):
             self.orig_msg = self.msg.strip()
         self.orig_msg_lst = []
 
-        ext_chars = [2306, 2375, 2381, 2366, 2367]
+        ext_chars = [x for x in range(2300, 2308)]
+        ext_chars.extend([x for x in range(2362, 2392)])
+        ext_chars.remove(2384)
+
         i = 0
         while i < len(self.orig_msg):
+            if (i <= len(self.orig_msg)-3) and (ord(self.orig_msg[i+1]) in ext_chars) and (ord(self.orig_msg[i+2]) in ext_chars):
+                self.orig_msg_lst.append("".join((self.orig_msg[i], self.orig_msg[i+1], self.orig_msg[i+2])))
+                i += 3
             if (i <= len(self.orig_msg)-2) and (ord(self.orig_msg[i+1]) in ext_chars):
                 self.orig_msg_lst.append("".join((self.orig_msg[i], self.orig_msg[i+1])))
                 i += 2
             else:
                 self.orig_msg_lst.append(self.orig_msg[i])
                 i += 1
-                
+
         self.boxes = []
         for row in range(10, 1000, 20):
             for col in range(10, 1000, 20):
@@ -126,8 +132,13 @@ if __name__ == "__main__":
         file_path = args.file
         
     app = QApplication(sys.argv)
-    w = Window(fpath=file_path)
-    w.resize(800, 600)
+    screen = app.primaryScreen()
+    size = screen.size()
+    width = 800
+    height = 600
+
+    w = Window(width, height, fpath=file_path)
+    w.resize(width, height)
     w.setWindowTitle("Subliminal Messages Editor")
 
     w.show()
